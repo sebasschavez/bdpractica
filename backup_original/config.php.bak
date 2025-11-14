@@ -1,9 +1,8 @@
 <?php
-// Forzar UTF-8 en TODA la aplicación
+// Forzar UTF-8 en todo el script
 header('Content-Type: text/html; charset=UTF-8');
 mb_internal_encoding('UTF-8');
 mb_http_output('UTF-8');
-ini_set('default_charset', 'UTF-8');
 
 // Iniciar sesión
 session_start();
@@ -14,20 +13,29 @@ define('DB_USER', getenv('DB_USER') ?: 'root');
 define('DB_PASS', getenv('DB_PASS') ?: 'rootpassword');
 define('DB_NAME', getenv('DB_NAME') ?: 'tienda_don_manolo');
 
-// Crear conexión
+// Crear conexión con manejo de errores mejorado
 try {
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
     
+    // Verificar conexión
     if ($conn->connect_error) {
         throw new Exception("Error de conexión: " . $conn->connect_error);
     }
     
-    // CRÍTICO: Establecer UTF-8 en MySQL
+    // Establecer charset UTF-8 - CRÍTICO
     $conn->set_charset("utf8mb4");
     $conn->query("SET NAMES 'utf8mb4'");
+    $conn->query("SET CHARACTER SET utf8mb4");
+    $conn->query("SET character_set_connection=utf8mb4");
     
 } catch (Exception $e) {
-    die("Error de base de datos: " . $e->getMessage());
+    // En desarrollo, mostrar error
+    if (getenv('ENVIRONMENT') === 'development') {
+        die("Error de base de datos: " . $e->getMessage());
+    }
+    // En producción, registrar y mostrar mensaje genérico
+    error_log($e->getMessage());
+    die("Error al conectar con la base de datos. Contacte al administrador.");
 }
 
 // Funciones auxiliares
@@ -51,6 +59,7 @@ function obtenerIdUsuario() {
     return isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 0;
 }
 
+// Función para logging (útil en producción)
 function registrarLog($mensaje, $nivel = 'INFO') {
     $fecha = date('Y-m-d H:i:s');
     $log = "[$fecha] [$nivel] $mensaje" . PHP_EOL;

@@ -152,7 +152,7 @@ DELIMITER ;
 -- Insertar empleado por defecto (Don Manolo)
 -- Password: admin123 (hasheado con PHP password_hash)
 INSERT INTO Empleado (Nombre, Apellido, Puesto, Usuario, Password) VALUES
-('Manolo', 'Pérez', 'Dueño', 'donmanolo', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
+('Manolo', 'Perez', 'Dueño', 'donmanolo', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
 ('María', 'González', 'Cajera', 'maria', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
 
 -- Datos de ejemplo: Proveedores
