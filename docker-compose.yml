@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Servidor Web PHP + Apache
+  web:
+    image: php:8.1-apache
+    container_name: tienda_don_manolo_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=rootpassword
+      - DB_NAME=tienda_don_manolo
+    networks:
+      - tienda_network
+    command: >
+      bash -c "docker-php-ext-install mysqli
+      && a2enmod rewrite
+      && apache2-foreground"
+
+  # Base de Datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: tienda_don_manolo_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: tienda_don_manolo
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./tienda_don_manolo.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - tienda_network
+
+  # PhpMyAdmin (Opcional - para administrar la BD)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: tienda_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+    depends_on:
+      - db
+    networks:
+      - tienda_network
+
+networks:
+  tienda_network:
+    driver: bridge
+
+volumes:
+  db_data:
